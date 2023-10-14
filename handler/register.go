@@ -13,6 +13,28 @@ func (h *handler) registerHandler(r *gin.Engine) {
 
 	baseEndpoints.POST("/customer", h.handleRegisterCustomer)
 	baseEndpoints.GET("/customer", h.handleGetAllCustomer)
+	baseEndpoints.PUT("/customer", h.handleUpdateCustomer)
+}
+
+func (h *handler) handleUpdateCustomer(c *gin.Context) {
+	request := payload.UpdateCustomer{}
+	if err := c.Bind(&request); err != nil {
+		c.JSON(http.StatusBadRequest, struct {
+			Message string `json:"message"`
+			Error   string `json:"error"`
+		}{Message: err.Error(), Error: "Bad Request"})
+		return
+	}
+
+	response, err := h.CustomerService.UpdateCustomer(request, request.CustomerID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, struct {
+			Message string `json:"message"`
+		}{Message: err.Error()})
+	}
+
+	c.JSON(http.StatusOK, response)
+
 }
 
 func (h *handler) handleRegisterCustomer(c *gin.Context) {

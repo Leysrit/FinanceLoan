@@ -111,3 +111,38 @@ func (s *customerServiceImpl) GetAllCustomer(request payload.ListCustomerRequest
 
 	return &response, nil
 }
+
+func (s *customerServiceImpl) UpdateCustomer(request payload.UpdateCustomer, customerID int) (*payload.CustomerResponse, error) {
+	if request.CustomerID != customerID {
+		return nil, fmt.Errorf("Invalid Customer ID")
+	}
+
+	customer, err := s.customerRepository.UpdateCustomer(&entity.Customer{
+		CustomerID:   request.CustomerID,
+		NIK:          request.NIK,
+		FullName:     request.FullName,
+		LegalName:    request.LegalName,
+		PlaceOfBirth: request.PlaceOfBirth,
+		DateOfBirth:  request.DateOfBirth,
+		Salary:       request.Salary,
+		KTPImage:     request.KTPImage,
+		SelfieImage:  request.SelfieImage,
+	}, customerID)
+	if err != nil {
+		return nil, err
+	}
+
+	response := payload.CustomerResponse{
+		Code:    200,
+		Message: "Updated Succesfully",
+		Data: payload.Customer{
+			CustomerID: customer.CustomerID,
+			NIK:        customer.NIK,
+			FullName:   customer.FullName,
+			LegalName:  customer.LegalName,
+		},
+	}
+
+	return &response, nil
+
+}

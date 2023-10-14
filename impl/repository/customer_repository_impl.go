@@ -103,3 +103,68 @@ func (s *customerRepositoryImpl) GetAllCustomer(page int, limit int, nama string
 	return listCustomer, nil
 
 }
+
+func (s *customerRepositoryImpl) GetCustomerByID(id int) (*entity.Customer, error) {
+	query := `
+	SELECT CustomerID, NIK, FullName, LegalName, PlaceOfBirth, DateOfBirth, Salary
+	FROM Customers
+	WHERE CustomerID = ?`
+
+	row := s.db.QueryRow(query, id)
+	customer := &entity.Customer{}
+	err := row.Scan(
+		&customer.CustomerID,
+		&customer.NIK,
+		&customer.FullName,
+		&customer.LegalName,
+		&customer.PlaceOfBirth,
+		&customer.DateOfBirth,
+		&customer.Salary,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return customer, nil
+}
+
+func (s *customerRepositoryImpl) UpdateCustomer(customer *entity.Customer, customerID int) (*entity.Customer, error) {
+	query := `
+	UPDATE Customers
+	SET
+		CustomerID = ?,
+		NIK = ?,
+		FullName = ?,
+		LegalName = ?,
+		PlaceOfBirth = ?,
+		DateOfBirth = ?,
+		Salary = ?,
+		KTPImage = ?,
+		SelfieImage = ?
+	WHERE CustomerID = ?`
+
+	_, err := s.db.Exec(
+		query,
+		customer.CustomerID,
+		customer.NIK,
+		customer.FullName,
+		customer.LegalName,
+		customer.PlaceOfBirth,
+		customer.DateOfBirth,
+		customer.Salary,
+		customer.KTPImage,
+		customer.SelfieImage,
+		customerID,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	updatedCustomer, err := s.GetCustomerByID(customerID)
+	if err != nil {
+		return nil, err
+	}
+
+	return updatedCustomer, nil
+
+}
