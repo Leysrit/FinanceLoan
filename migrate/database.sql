@@ -1,11 +1,10 @@
 -- +migrate Up        
 DROP TABLE IF EXISTS limit_loan;
-DROP TABLE IF EXISTS customers;
 DROP TABLE IF EXISTS transactions;
-
+DROP TABLE IF EXISTS customers;
 -- +migrate Up  
 CREATE TABLE IF NOT EXISTS customers (
-	CustomerID INT PRIMARY KEY,
+	CustomerID INT AUTO_INCREMENT PRIMARY KEY ,
 	NIK VARCHAR(16) NOT NULL,
 	FullName VARCHAR(255) NOT NULL,
 	LegalName VARCHAR(255) NOT NULL,

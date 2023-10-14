@@ -4,6 +4,8 @@ import (
 	"Finance/api/repository"
 	"Finance/entity"
 	"Finance/payload"
+	"Finance/utility"
+	"fmt"
 
 	"github.com/golang-jwt/jwt/v4"
 )
@@ -55,11 +57,57 @@ func (s *customerServiceImpl) RegisterCustomer(request payload.CustomerRequest) 
 	// 	return nil, err
 	// }
 
-	response := &payload.CustomerResponse{
+	response := payload.CustomerResponse{
 		Code:    200,
 		Message: "Regitered Succesfully",
-		Data:    map[string]interface{}{"customer": customer},
+		Data: payload.Customer{
+			CustomerID: customer.CustomerID,
+			NIK:        customer.NIK,
+			FullName:   customer.FullName,
+			LegalName:  customer.LegalName,
+		},
 	}
 
-	return response, nil
+	return &response, nil
+}
+
+func (s *customerServiceImpl) GetAllCustomer(request payload.ListCustomerRequest) (*payload.ListCustomerResponse, error) {
+	customerTotal, err := s.customerRepository.GetTotalCustomer(request.Nama)
+	if err != nil {
+		return nil, err
+	}
+
+	nextPage, prevPage, totalPage := utility.GetPaginateURL("/api/customer", &request.Page, &request.Limit, customerTotal)
+
+	listCustomer, err := s.customerRepository.GetAllCustomer(request.Page, request.Limit, request.Nama)
+	if err != nil {
+		return nil, err
+	}
+
+	lenListCustomer := len(listCustomer)
+	if lenListCustomer == 0 {
+		return nil, fmt.Errorf("Data Not Found")
+	}
+
+	result := make([]payload.Customer, 0)
+	for i := 0; i < lenListCustomer; i++ {
+		customer := listCustomer[i]
+		result = append(result, payload.Customer{
+			CustomerID: customer.CustomerID,
+			NIK:        customer.NIK,
+			FullName:   customer.FullName,
+			LegalName:  customer.LegalName,
+		})
+	}
+
+	response := payload.ListCustomerResponse{
+		Data: result,
+		PaginateInfo: payload.PaginateInfo{
+			NextPage:   nextPage,
+			PrevPage:   prevPage,
+			TotalPages: totalPage,
+		},
+	}
+
+	return &response, nil
 }
