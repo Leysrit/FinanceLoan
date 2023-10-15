@@ -6,17 +6,14 @@ import (
 	"Finance/payload"
 	"Finance/utility"
 	"fmt"
-
-	"github.com/golang-jwt/jwt/v4"
+	"log"
 )
 
-var secretKey = []byte("Final Project Beasiswa")
-
-type Claims struct {
-	Email string `json:"email"`
-	Role  string `json:"role"`
-	jwt.StandardClaims
-}
+// type Claims struct {
+// 	Email string `json:"email"`
+// 	Role  string `json:"role"`
+// 	jwt.StandardClaims
+// }
 
 type customerServiceImpl struct {
 	customerRepository repository.CustomerRepository
@@ -72,6 +69,7 @@ func (s *customerServiceImpl) RegisterCustomer(request payload.CustomerRequest) 
 }
 
 func (s *customerServiceImpl) GetAllCustomer(request payload.ListCustomerRequest) (*payload.ListCustomerResponse, error) {
+	log.Printf("Getting all customer")
 	customerTotal, err := s.customerRepository.GetTotalCustomer(request.Nama)
 	if err != nil {
 		return nil, err
@@ -113,10 +111,6 @@ func (s *customerServiceImpl) GetAllCustomer(request payload.ListCustomerRequest
 }
 
 func (s *customerServiceImpl) UpdateCustomer(request payload.UpdateCustomer, customerID int) (*payload.CustomerResponse, error) {
-	if request.CustomerID != customerID {
-		return nil, fmt.Errorf("Invalid Customer ID")
-	}
-
 	customer, err := s.customerRepository.UpdateCustomer(&entity.Customer{
 		CustomerID:   request.CustomerID,
 		NIK:          request.NIK,

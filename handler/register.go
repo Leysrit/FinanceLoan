@@ -2,6 +2,7 @@ package handler
 
 import (
 	"Finance/payload"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -13,7 +14,78 @@ func (h *handler) registerHandler(r *gin.Engine) {
 
 	baseEndpoints.POST("/customer", h.handleRegisterCustomer)
 	baseEndpoints.GET("/customer", h.handleGetAllCustomer)
-	baseEndpoints.PUT("/customer", h.handleUpdateCustomer)
+	baseEndpoints.PUT("/customer/:id", h.handleUpdateCustomer)
+
+	baseEndpoints.GET("/limit-loan/:customer_id", h.handleGetLimitLoan)
+	baseEndpoints.PUT("/limit-loan/:customer_id", h.handleUpdateLimitLoan)
+}
+
+func (h *handler) handleUpdateLimitLoan(c *gin.Context) {
+	request := payload.UpdateLimitLoanRequest{}
+	if err := c.Bind(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+			"error":   "Bad Request",
+		})
+		return
+	}
+
+	customerID := c.Param("customer_id")
+	id, err := strconv.Atoi(customerID)
+	if err != nil {
+		log.Printf("Error converting customer ID to integer: %s", err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+			"error":   "Bad Request",
+		})
+		return
+	}
+
+	request.CustomerID = id
+	response, err := h.LimitLoanService.UpdateLimitLoan(&request)
+	if err != nil {
+		log.Printf("Error updating limit loan: %s", err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+			"error":   "Bad Request",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
+}
+
+func (h *handler) handleGetLimitLoan(c *gin.Context) {
+	customerID := c.Param("customer_id")
+	id, err := strconv.Atoi(customerID)
+	if err != nil {
+		log.Printf("Error converting customer ID to integer: %s", err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+			"error":   "Bad Request",
+		})
+		return
+	}
+
+	if id == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid customer ID",
+			"error":   "Bad Request",
+		})
+		return
+	}
+
+	response, err := h.LimitLoanService.GetLimitLoan(id)
+	if err != nil {
+		log.Printf("Error retrieving limit loan: %s", err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+			"error":   "Bad Request",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
 }
 
 func (h *handler) handleUpdateCustomer(c *gin.Context) {
@@ -26,7 +98,17 @@ func (h *handler) handleUpdateCustomer(c *gin.Context) {
 		return
 	}
 
-	response, err := h.CustomerService.UpdateCustomer(request, request.CustomerID)
+	requestID := c.Param("id")
+	id, err := strconv.Atoi(requestID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, struct {
+			Message string `json:"message"`
+			Error   string `json:"error"`
+		}{Message: err.Error(), Error: "Bad Request"})
+		return
+	}
+
+	response, err := h.CustomerService.UpdateCustomer(request, id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, struct {
 			Message string `json:"message"`

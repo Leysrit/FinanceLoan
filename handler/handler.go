@@ -8,12 +8,14 @@ import (
 )
 
 type handler struct {
-	CustomerService service.CustomerService
+	CustomerService  service.CustomerService
+	LimitLoanService service.LimitLoanService
 }
 
 func StartHandler(serviceModule module.ServiceModule) {
 	handler := handler{
-		CustomerService: serviceModule.GetCustomerService(),
+		CustomerService:  serviceModule.GetCustomerService(),
+		LimitLoanService: serviceModule.GetLimitLoanService(),
 	}
 
 	router := gin.Default()

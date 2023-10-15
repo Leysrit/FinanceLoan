@@ -7,8 +7,8 @@ import (
 	"strings"
 )
 
-type customerLogin struct {
-}
+// type customerLogin struct {
+// }
 
 type customerRepositoryImpl struct {
 	db *sql.DB
@@ -132,7 +132,6 @@ func (s *customerRepositoryImpl) UpdateCustomer(customer *entity.Customer, custo
 	query := `
 	UPDATE Customers
 	SET
-		CustomerID = ?,
 		NIK = ?,
 		FullName = ?,
 		LegalName = ?,
@@ -145,7 +144,6 @@ func (s *customerRepositoryImpl) UpdateCustomer(customer *entity.Customer, custo
 
 	_, err := s.db.Exec(
 		query,
-		customer.CustomerID,
 		customer.NIK,
 		customer.FullName,
 		customer.LegalName,
