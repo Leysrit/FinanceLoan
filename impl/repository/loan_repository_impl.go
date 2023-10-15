@@ -85,32 +85,6 @@ func (r *loanRepositoryImpl) UpdateLimitLoan(limit *entity.Loan) (*entity.Loan, 
 
 }
 
-// func (r *loanRepositoryImpl) UpdateLimitLoan(limit *entity.Loan) (*entity.Loan, error) {
-// 	query := `UPDATE limit_loan SET LimitAmount = ? WHERE LimitID = ? AND CustomerID = ?`
-
-// 	result, err := r.db.Exec(query, limit.LimitAmount, limit.LimitID, limit.CustomerID)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	rowsAffected, err := result.RowsAffected()
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	if rowsAffected == 0 {
-// 		return nil, fmt.Errorf("Data Not Found")
-// 	}
-
-// 	updatedLoan, err := r.GetLimitLoanByID(limit.CustomerID)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	return updatedLoan, nil
-
-// }
-
 func (r *loanRepositoryImpl) InsertNewLoan(loan *entity.Loan) (*entity.Loan, error) {
 	query := `INSERT INTO limit_loan (LimitID, TenorMonths, LimitAmount, CustomerID) VALUES (?, ?, ?, ?)`
 

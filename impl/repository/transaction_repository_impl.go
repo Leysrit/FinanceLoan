@@ -26,6 +26,8 @@ func (r *transactionRepositoryImpl) AddTransaction(transaction *entity.Transacti
 	if err != nil {
 		return nil, err
 	}
+
+	// also for escape sql injection
 	query := `INSERT INTO transactions (ContractNumber, CustomerID, OTR, AdminFee, InstallmentAmount, InterestAmount, AssetName) VALUES (?, ?, ?, ?, ?, ?, ?)`
 	_, err = trx.Exec(query, transaction.ContractNumber, transaction.CustomerID, transaction.OTR, transaction.AdminFee, transaction.InstallmentAmount, transaction.InterestAmount, transaction.AssetName)
 	if err != nil {
@@ -40,6 +42,4 @@ func (r *transactionRepositoryImpl) AddTransaction(transaction *entity.Transacti
 	}
 
 	return transaction, nil
-
-	// return transaction, nil
 }

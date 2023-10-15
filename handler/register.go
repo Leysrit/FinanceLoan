@@ -2,6 +2,7 @@ package handler
 
 import (
 	"Finance/payload"
+	"html"
 	"log"
 	"net/http"
 	"strconv"
@@ -35,7 +36,6 @@ func (h *handler) handleAddTransaction(c *gin.Context) {
 
 	customerID := c.Param("customer_id")
 	id, err := strconv.Atoi(customerID)
-
 	if err != nil {
 		log.Printf("Error converting customer ID to integer: %s", err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -47,6 +47,11 @@ func (h *handler) handleAddTransaction(c *gin.Context) {
 
 	request.CustomerID = id
 	log.Println("Customer ID: ", request.CustomerID)
+
+	// Menghindari XSS dengan membersihkan data input pengguna
+	cleanedAssetName := html.EscapeString(request.AssetName)
+	request.AssetName = cleanedAssetName
+
 	response, err := h.TransactionService.AddTransaction(&request)
 	if err != nil {
 		log.Printf("Error adding transaction: %s", err.Error())
@@ -218,4 +223,5 @@ func (h *handler) handleGetAllCustomer(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response)
+	return
 }

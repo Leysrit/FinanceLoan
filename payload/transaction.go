@@ -1,7 +1,6 @@
 package payload
 
 type AddTransactionRequest struct {
-	ContractNumber    int     `json:"contract_number"`
 	CustomerID        int     `json:"customer_id"`
 	OTR               float64 `json:"otr"`
 	AdminFee          float64 `json:"admin_fee"`
