@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"Finance/middleware"
 	"Finance/payload"
 	"html"
 	"log"
@@ -22,7 +23,7 @@ func (h *handler) registerHandler(r *gin.Engine) {
 	baseEndpoints.GET("/limit-loan/:customer_id", h.handleGetLimitLoan)
 	baseEndpoints.PUT("/limit-loan/:customer_id", h.handleUpdateLimitLoan)
 
-	baseEndpoints.POST("/transaction/:customer_id", h.handleAddTransaction)
+	baseEndpoints.POST("/transaction/:customer_id", middleware.AuthorizationMiddleware(), h.handleAddTransaction)
 }
 
 func (h *handler) handleLogin(c *gin.Context) {
