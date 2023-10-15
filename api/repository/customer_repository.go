@@ -8,4 +8,5 @@ type CustomerRepository interface {
 	GetTotalCustomer(nama string) (int, error)
 	GetCustomerByID(id int) (*entity.Customer, error)
 	UpdateCustomer(customer *entity.Customer, customerID int) (*entity.Customer, error)
+	Login(username string, password string) (*entity.Customer, error)
 }

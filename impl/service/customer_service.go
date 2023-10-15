@@ -7,13 +7,10 @@ import (
 	"Finance/utility"
 	"fmt"
 	"log"
-)
+	"time"
 
-// type Claims struct {
-// 	Email string `json:"email"`
-// 	Role  string `json:"role"`
-// 	jwt.StandardClaims
-// }
+	"github.com/golang-jwt/jwt"
+)
 
 type customerServiceImpl struct {
 	customerRepository repository.CustomerRepository
@@ -23,6 +20,34 @@ func NewCustomerServiceImpl(customerRepository repository.CustomerRepository) *c
 	return &customerServiceImpl{
 		customerRepository: customerRepository,
 	}
+}
+
+func (s *customerServiceImpl) Login(request payload.LoginRequest) (*payload.LoginResponse, error) {
+	customer, err := s.customerRepository.Login(request.Username, request.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	claims := payload.Claims{
+		Username: customer.FullName,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(3 * 60 * time.Minute).Unix(),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString([]byte("secret"))
+	if err != nil {
+		return nil, err
+	}
+
+	response := payload.LoginResponse{
+		Username: customer.FullName,
+		Token:    tokenString,
+	}
+
+	return &response, nil
+
 }
 
 func (s *customerServiceImpl) RegisterCustomer(request payload.CustomerRequest) (*payload.CustomerResponse, error) {
