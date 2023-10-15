@@ -33,6 +33,17 @@ CREATE TABLE IF NOT EXISTS transactions (
 	AssetName VARCHAR(255),
 	FOREIGN KEY (CustomerID) REFERENCES customers(CustomerID)
 );
+
+-- +migrate Up
+CREATE TABLE auth (
+	CustomerID INT NOT NULL,
+    Username VARCHAR(50) UNIQUE NOT NULL,
+    Password VARCHAR(50) NOT NULL,
+	FOREIGN KEY (CustomerID) REFERENCES customers(CustomerID)
+);
+
+
+
 -- +migrate Up  
 INSERT INTO customers (CustomerID, NIK, FullName, LegalName, PlaceOfBirth, DateOfBirth, Salary, KTPImage, SelfieImage)
 VALUES
@@ -53,7 +64,9 @@ VALUES
 INSERT INTO transactions (ContractNumber, CustomerID, OTR, AdminFee, InstallmentAmount, InterestAmount, AssetName)
 VALUES
 	(101, 1, 15000000.00, 100000.00, 400000.00, 5000.00, 'Motor Yamaha XMAX');
-
+-- +migrate Up  
+INSERT INTO auth (CustomerID, Username, Password) VALUES
+(1, 'budi', 'budi');
 -- +migrate Down        
         DROP TABLE IF EXISTS limit_loan;
         DROP TABLE IF EXISTS customers;

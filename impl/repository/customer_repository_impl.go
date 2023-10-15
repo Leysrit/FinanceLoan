@@ -20,6 +20,21 @@ func NewCustomerRepositoryImpl(db *sql.DB) *customerRepositoryImpl {
 	}
 }
 
+func (s *customerRepositoryImpl) Login(username string, password string) (*entity.Customer, error) {
+	query := `SELECT username FROM auth WHERE username = ? AND password = ?`
+
+	customer := &entity.Customer{}
+
+	row := s.db.QueryRow(query, username, password)
+	if err := row.Scan(
+		&customer.FullName,
+	); err != nil {
+		return nil, err
+	}
+
+	return customer, nil
+}
+
 func (s *customerRepositoryImpl) RegisterCustomer(customer *entity.Customer) (*entity.Customer, error) {
 	query := `
 	INSERT INTO Customers (CustomerID, NIK, FullName, LegalName, PlaceOfBirth, DateOfBirth, Salary, KTPImage, SelfieImage)

@@ -13,6 +13,8 @@ import (
 func (h *handler) registerHandler(r *gin.Engine) {
 	baseEndpoints := r.Group("/api")
 
+	baseEndpoints.POST("/login", h.handleLogin)
+
 	baseEndpoints.POST("/customer", h.handleRegisterCustomer)
 	baseEndpoints.GET("/customer", h.handleGetAllCustomer)
 	baseEndpoints.PUT("/customer/:id", h.handleUpdateCustomer)
@@ -21,6 +23,30 @@ func (h *handler) registerHandler(r *gin.Engine) {
 	baseEndpoints.PUT("/limit-loan/:customer_id", h.handleUpdateLimitLoan)
 
 	baseEndpoints.POST("/transaction/:customer_id", h.handleAddTransaction)
+}
+
+func (h *handler) handleLogin(c *gin.Context) {
+	request := payload.LoginRequest{}
+	if err := c.Bind(&request); err != nil {
+		log.Printf("Error binding request: %s", err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+			"error":   "Bad Request",
+		})
+		return
+	}
+
+	response, err := h.CustomerService.Login(request)
+	if err != nil {
+		log.Printf("Error login: %s", err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+			"error":   "Bad Request",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
 }
 
 func (h *handler) handleAddTransaction(c *gin.Context) {
