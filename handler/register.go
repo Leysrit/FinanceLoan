@@ -18,6 +18,46 @@ func (h *handler) registerHandler(r *gin.Engine) {
 
 	baseEndpoints.GET("/limit-loan/:customer_id", h.handleGetLimitLoan)
 	baseEndpoints.PUT("/limit-loan/:customer_id", h.handleUpdateLimitLoan)
+
+	baseEndpoints.POST("/transaction/:customer_id", h.handleAddTransaction)
+}
+
+func (h *handler) handleAddTransaction(c *gin.Context) {
+	request := payload.AddTransactionRequest{}
+	if err := c.Bind(&request); err != nil {
+		log.Printf("Error binding request: %s", err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+			"error":   "Bad Request",
+		})
+		return
+	}
+
+	customerID := c.Param("customer_id")
+	id, err := strconv.Atoi(customerID)
+
+	if err != nil {
+		log.Printf("Error converting customer ID to integer: %s", err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+			"error":   "Bad Request",
+		})
+		return
+	}
+
+	request.CustomerID = id
+	log.Println("Customer ID: ", request.CustomerID)
+	response, err := h.TransactionService.AddTransaction(&request)
+	if err != nil {
+		log.Printf("Error adding transaction: %s", err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+			"error":   "Bad Request",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
 }
 
 func (h *handler) handleUpdateLimitLoan(c *gin.Context) {

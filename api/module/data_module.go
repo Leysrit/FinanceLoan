@@ -7,4 +7,5 @@ import (
 type DataModule interface {
 	GetCustomerRepository() repository.CustomerRepository
 	GetLimitLoanRepository() repository.LimitLoanRepository
+	GetTransactionRepository() repository.TransactionRepository
 }

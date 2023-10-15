@@ -7,8 +7,9 @@ import (
 )
 
 type serviceModuleImpl struct {
-	customerService  service.CustomerService
-	limitLoanService service.LimitLoanService
+	customerService    service.CustomerService
+	limitLoanService   service.LimitLoanService
+	transactionService service.TransactionService
 }
 
 func NewServiceModuleImpl(dataModule module.DataModule) *serviceModuleImpl {
@@ -19,6 +20,9 @@ func NewServiceModuleImpl(dataModule module.DataModule) *serviceModuleImpl {
 		limitLoanService: serviceImpl.NewLimitLoanServiceImpl(
 			dataModule.GetLimitLoanRepository(),
 		),
+		transactionService: serviceImpl.NewTransactionServiceImpl(
+			dataModule.GetTransactionRepository(),
+		),
 	}
 }
 
@@ -28,4 +32,8 @@ func (s *serviceModuleImpl) GetCustomerService() service.CustomerService {
 
 func (s *serviceModuleImpl) GetLimitLoanService() service.LimitLoanService {
 	return s.limitLoanService
+}
+
+func (s *serviceModuleImpl) GetTransactionService() service.TransactionService {
+	return s.transactionService
 }
