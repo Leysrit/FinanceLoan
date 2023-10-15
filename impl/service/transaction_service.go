@@ -28,7 +28,6 @@ func (s *transactionServiceImpl) AddTransaction(request *payload.AddTransactionR
 		defer wg.Done()
 
 		transaction, err := s.transactionRepository.AddTransaction(&entity.Transaction{
-			ContractNumber:    request.ContractNumber,
 			CustomerID:        request.CustomerID,
 			OTR:               request.OTR,
 			AdminFee:          request.AdminFee,
@@ -67,7 +66,6 @@ func (s *transactionServiceImpl) AddTransaction(request *payload.AddTransactionR
 		Code:    200,
 		Message: "Success",
 		Data: payload.AddTransactionRequest{
-			ContractNumber:    trx[0].ContractNumber,
 			CustomerID:        trx[0].CustomerID,
 			OTR:               trx[0].OTR,
 			AdminFee:          trx[0].AdminFee,
