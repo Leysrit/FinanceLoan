@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS customers (
 );
 -- +migrate Up  
 CREATE TABLE IF NOT EXISTS limit_loan (
-	LimitID INT PRIMARY KEY,
+	LimitID INT AUTO_INCREMENT PRIMARY KEY,
 	CustomerID INT NOT NULL,
 	TenorMonths INT,
 	LimitAmount DECIMAL(10, 2),
@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS limit_loan (
 		);
 -- +migrate Up  
 CREATE TABLE IF NOT EXISTS transactions (
-	ContractNumber INT PRIMARY KEY,
+	ContractNumber INT AUTO_INCREMENT PRIMARY KEY,
 	CustomerID INT NOT NULL,
 	OTR DECIMAL(10, 2),
 	AdminFee DECIMAL(10, 2),
