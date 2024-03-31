@@ -3,6 +3,7 @@ package auth
 import (
 	"Finance/payload"
 	"Finance/utility"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -41,5 +42,6 @@ func GetClaimsFromJwt(tokenString string) (*payload.Claims, error) {
 		return nil, utility.ErrUnauthorized
 	}
 
+	fmt.Println("test")
 	return claims, nil
 }
